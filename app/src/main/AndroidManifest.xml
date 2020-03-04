@@ -14,6 +14,7 @@
         <activity android:name=".RegistrationActivity"
             android:parentActivityName=".LoginActivity">
         </activity>
+        <activity android:name=".FriendListActivity"></activity>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

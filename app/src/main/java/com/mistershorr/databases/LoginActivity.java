@@ -90,7 +90,11 @@ public class LoginActivity extends AppCompatActivity {
                 public void handleResponse( BackendlessUser user )
                 {
                     // user has been logged in
-                    Toast.makeText(LoginActivity.this, "Welcome "+ user.getProperty("username") + "!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Welcome "+ user.getProperty
+                            ("username") + "!", Toast.LENGTH_SHORT).show();
+                    Intent logInSuccessful = new Intent(LoginActivity.this,
+                            FriendListActivity.class);
+                    startActivity(logInSuccessful);
                 }
                 public void handleFault( BackendlessFault fault )
                 {
@@ -101,7 +105,8 @@ public class LoginActivity extends AppCompatActivity {
         }
         else
         {
-            Toast.makeText(LoginActivity.this, "Enter username and password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Enter username and password",
+                    Toast.LENGTH_SHORT).show();
         }
 
         // do not forget to call Backendless.initApp in the app initialization code

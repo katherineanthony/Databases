@@ -38,6 +38,8 @@ public class RegistrationActivity extends AppCompatActivity {
         setListeners();
     }
 
+    // there is so much toxic male energy in this class
+
     private void setListeners() {
         buttonCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +47,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 createBackendlessAccount();
             }
         });
-    }
+    }// and like he was like "Open your legs." like dead serious and super scary and i was like no. and then he tried to like open my legs and kept saying that
 
     private void createBackendlessAccount() {
         // TODO update to make this work with startActivityForResult
