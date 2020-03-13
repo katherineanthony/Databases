@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -23,6 +26,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class FriendListActivity extends AppCompatActivity {
@@ -54,6 +59,9 @@ public class FriendListActivity extends AppCompatActivity {
     }
 
     private void loadDataFromBackendless(){
+
+        Backendless.initApp(this, Credentials.APP_ID, Credentials.API_KEY);
+
         String userId = Backendless.UserService.CurrentUser().getObjectId();
 
         // ownerId = 9B113F7E-2040-C216-FF78-718758640D00
@@ -78,6 +86,7 @@ public class FriendListActivity extends AppCompatActivity {
                                 (FriendListActivity.this, FriendDetailActivity.class);
                         openFriend.putExtra(EXTRA_FRIEND, foundFriends.get(i));
                         startActivity(openFriend);
+                        //add an option for delete?
                     }
                 });
                 Log.d("Loaded friends", "handleResponse: " + foundFriends.toString());
@@ -98,8 +107,48 @@ public class FriendListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent addANewFriend = new Intent
                         (FriendListActivity.this, FriendDetailActivity.class);
+                startActivity(addANewFriend);
             }
         });
+        // the onClickListener for the listView is in the backendless data call
+
+    }
+
+    // these two methods are for the options menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_friendlist_sorting, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_friendlist_sortByName:
+                sortByName();
+                friendAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.menu_friendlist_sortByMoney:
+                sortByMoney();
+                friendAdapter.notifyDataSetChanged();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void sortByName(){
+        Collections.sort(friendList, new Comparator<Friend>() {
+            @Override
+            public int compare(Friend friend, Friend t1) {
+                return friend.getName().compareTo(t1.getName());
+            }
+        });
+    }
+    private void sortByMoney(){
+        Collections.sort(friendList);
     }
 
     private void wireWidgets() {
@@ -117,7 +166,8 @@ public class FriendListActivity extends AppCompatActivity {
             // the constructor either
             super(FriendListActivity.this, -1, friendList);
             this.friendList=friendList;
-        }
+        } //im worried that hes going to tell his friends that im a bad kisser
+
 
 
 
@@ -139,7 +189,7 @@ public class FriendListActivity extends AppCompatActivity {
             // we're calling it from the inflated layout to find THOSE widgets
             textViewMoneyOwed = convertView.findViewById(R.id.textView_item_moneyOwed);
             textViewName = convertView.findViewById(R.id.textView_item_name);
-            textViewOverallLikability = convertView.findViewById(R.id.textView_item_overLikability);
+
 
 
             // do this for as many widgets as you need
@@ -147,7 +197,7 @@ public class FriendListActivity extends AppCompatActivity {
             // set the value for each widget. use the position parameter variable
             // to get the hero that you need out of the list
             // and set the values for widgets.
-            textViewOverallLikability.setText(String.valueOf(friendList.get(position).getOverallLikability()));
+
             textViewName.setText(String.valueOf(friendList.get(position).getName()));
             textViewMoneyOwed.setText(String.valueOf(friendList.get(position).getMoneyOwed()));
 

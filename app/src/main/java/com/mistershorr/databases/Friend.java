@@ -3,7 +3,7 @@ package com.mistershorr.databases;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Friend implements Parcelable {
+public class Friend implements Parcelable, Comparable<Friend> {
 
     private int clumsiness;
     private double gymFrequency;
@@ -11,7 +11,6 @@ public class Friend implements Parcelable {
     private double moneyOwed;
     private int trustworthiness;
     private String name;
-    private int overallLikability;
 
     private String objectId;
     private String ownerId;
@@ -97,14 +96,6 @@ public class Friend implements Parcelable {
         this.ownerId = ownerId;
     }
 
-    public int getOverallLikability() {
-        return overallLikability;
-    }
-
-    public void setOverallLikability(int overallLikability) {
-        this.overallLikability = overallLikability;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -144,4 +135,9 @@ public class Friend implements Parcelable {
             return new Friend[size];
         }
     };
+
+    @Override
+    public int compareTo(Friend friend) {
+        return (int) (this.getMoneyOwed()-friend.getMoneyOwed());
+    }
 }
