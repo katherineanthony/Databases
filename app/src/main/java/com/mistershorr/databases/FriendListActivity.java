@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public class FriendListActivity extends AppCompatActivity {
     private ListView listViewFriend;
@@ -48,8 +51,11 @@ public class FriendListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_list);
 
+
         wireWidgets();
         setListeners();
+
+        registerForContextMenu(listViewFriend);
     }
 
     @Override
@@ -134,6 +140,9 @@ public class FriendListActivity extends AppCompatActivity {
                 sortByMoney();
                 friendAdapter.notifyDataSetChanged();
                 return true;
+            case R.id.menu_friendlist_logout:
+                logout();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -144,6 +153,66 @@ public class FriendListActivity extends AppCompatActivity {
             @Override
             public int compare(Friend friend, Friend t1) {
                 return friend.getName().compareTo(t1.getName());
+            }
+        });
+    }
+
+    private void removeFriend(int index){
+        Backendless.Persistence.of(Friend.class).remove((Friend) listViewFriend.getAdapter().getItem(index), new AsyncCallback<Long>() {
+            @Override
+            public void handleResponse( Long response )
+            {
+                // Contact objectdhas been deleted
+                loadDataFromBackendless();
+            }
+            @Override
+            public void handleFault( BackendlessFault fault )
+            {
+                // an error has occurred, the error code can be retrieved with fault.getCode()
+            }
+        } );
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_contextmenu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        if(item.getItemId()==R.id.context_menuItem_remove)
+        {
+
+            removeFriend(info.position);
+            return true;
+        }
+        else {
+            return super.onContextItemSelected(item);
+        }
+
+    }
+
+
+
+    private void logout(){
+
+        Backendless.UserService.logout( new AsyncCallback<Void>()
+        {
+            public void handleResponse( Void response )
+            {
+                // user has been logged out.
+                Intent byeByeGoBackToLogin = new Intent(FriendListActivity.this, LoginActivity.class);
+                startActivity(byeByeGoBackToLogin);
+                finish();
+            }
+
+            public void handleFault( BackendlessFault fault )
+            {
+                // something went wrong and logout failed, to get the error code call fault.getCode()
             }
         });
     }
@@ -166,7 +235,7 @@ public class FriendListActivity extends AppCompatActivity {
             // the constructor either
             super(FriendListActivity.this, -1, friendList);
             this.friendList=friendList;
-        } //im worried that hes going to tell his friends that im a bad kisser
+        }
 
 
 

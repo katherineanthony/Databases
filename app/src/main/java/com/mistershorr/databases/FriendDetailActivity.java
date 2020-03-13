@@ -82,7 +82,6 @@ public class FriendDetailActivity extends AppCompatActivity {
                 // make toast that friend is saved
                 // send person back to the listActivity
                 Toast.makeText(FriendDetailActivity.this, "You have saved your friend", Toast.LENGTH_SHORT).show();
-
             }
 
             @Override
